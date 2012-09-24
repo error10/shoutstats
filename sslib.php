@@ -102,6 +102,41 @@ function GetShoutcastStats($host, $port)
 	return $server;
 }
 
+function GetShoutcast2Stats($host, $port, $sid = 1)
+{
+	$fp = fsockopen($host, $port, $errno, $errstr, 30);
+
+	// can't connect =(
+	if (!$fp)
+	{
+		print("$errstr ($errno)<br>\n");
+		$server['current'] = 0;
+		$server['max'] = 0;
+		// oh yes, it can connect
+	}
+	else
+	{
+		fputs($fp, "GET /stats?sid={$sid} HTTP/1.0\r\nUser-Agent: Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\r\n\r\n");
+		while (!feof($fp))
+		{
+			$content .= fgets($fp,128);
+		}
+		fclose($fp);
+
+		if (preg_match('<CURRENTLISTENERS\b[^>]*>(.*?)</CURRENTLISTENERS>', $content, $matches)) {
+			$server['current'] = $matches[1];
+		} else {
+			$server['current'] = 0;
+		}
+		if (preg_match('<MAXLISTENERS\b[^>]*>(.*?)</MAXLISTENERS>', $content, $matches)) {
+			$server['max'] = $matches[1];
+		} else {
+			$server['max'] = 0;
+		}
+		return $server;
+	}
+}
+
 function GetIcecastStats($host,$port,$mp)
 {
   $fp = fsockopen($host, $port, $errno, $errstr, 30);

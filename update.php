@@ -12,6 +12,11 @@ foreach ($servers as $n => $s)
 {
 	if($s["type"]=="shoutcast")
         {
+                if(!empty($s["sid"]))
+                {
+                        $audience[i]=GetShoutcast2Stats($s["host"],$s["port"],$s["sid"]);
+                        $rddfile = SS_PATH_RRD."/{$s["host"]}.".$s["port"].".{$s["sid"]}.rrd";
+                }
                 $audience[$i]=GetShoutcastStats($s["host"],$s["port"]);
                 $rddfile = SS_PATH_RRD."/{$s["host"]}.".$s["port"].".rrd";
         }
